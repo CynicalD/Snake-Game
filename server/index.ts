@@ -169,7 +169,7 @@ httpServer.listen(PORT, () => {
 });
 
 /// The logic of the game:
-const TICK_RATE = 50;
+const TICK_RATE = 85;
 
 setInterval(() => {
   if (gameState.status === 'PLAYING') {
@@ -233,10 +233,6 @@ setInterval(() => {
           break;
         }
       }
-
-      // TODO: Check for wall collisions
-      // TODO: Check for snake collisions
-      // TODO: Check for apple collisions
     }
   }
 
