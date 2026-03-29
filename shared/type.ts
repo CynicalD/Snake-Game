@@ -1,13 +1,17 @@
 // shared/type.ts
 
+//board size is 20x20 grid
+export const BOARD_SIZE = 20;
 // A simple coordinate on our grid
 export interface Point {
   x: number;
   y: number;
 }
 
-// The directions a snake can travel
-export type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
+
+
+// The directions a snake can travel + idle for when it restarts
+export type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT' | 'IDLE';
 
 // Everything we need to know about a single player
 export interface Player {
