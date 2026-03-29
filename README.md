@@ -5,23 +5,21 @@ Two-player real-time Snake game built with TypeScript and Socket.IO.
 This project demonstrates multiplayer state synchronization, a server-authoritative game loop, collision handling, and win/lose game states.
 
 ## Demo
-
-Add  screenshots to these paths:
-
-- `docs/screenshots/01-lobby.png`
-- `docs/screenshots/02-gameplay.png`
-- `docs/screenshots/03-game-over.png`
-
+Lobby and Ready Up state before the round starts:
 
 
 ![Lobby](docs/screenshots/01-lobby.png)
-Lobby and Ready Up state before the round starts.
+
+
+Live game with two players, apple collection, and movement:
 
 ![Gameplay](docs/screenshots/02-gameplay.png)
-Live game with two players, apple collection, and movement.
+
+
+Round result view with You won / You lost messaging:
 
 ![Game Over](docs/screenshots/03-game-over.png)
-Round result view with You won / You lost messaging.
+
 
 ## Features
 
