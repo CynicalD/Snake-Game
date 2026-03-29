@@ -71,8 +71,26 @@ function getRandomApplePosition(): Point {
 let gameState: GameState = {
   players: {}, 
   apple: getRandomPosition(),
-  status: 'WAITING'
+  status: 'WAITING',
+  winnerId: null,
+  gameOverReason: null
 };
+
+function getOtherPlayerId(playerId: string): string | null {
+  for (const id in gameState.players) {
+    if (id !== playerId) {
+      return id;
+    }
+  }
+
+  return null;
+}
+
+function endGame(winnerId: string | null, reason: GameState['gameOverReason']): void {
+  gameState.status = 'GAME_OVER';
+  gameState.winnerId = winnerId;
+  gameState.gameOverReason = reason;
+}
 
 // 2. listen for connections
 io.on('connection', (socket) => {
@@ -110,6 +128,8 @@ io.on('connection', (socket) => {
     
     if (updatedPlayerCount === MAX_PLAYERS && gameState.status === 'WAITING') {
       gameState.status = 'PLAYING';
+      gameState.winnerId = null;
+      gameState.gameOverReason = null;
       console.log('🏁 2 Players ready! Game is PLAYING!');
     }
 
@@ -134,6 +154,8 @@ io.on('connection', (socket) => {
     // If someone leaves, pause the game
     if (Object.keys(gameState.players).length < 2) {
       gameState.status = 'WAITING';
+      gameState.winnerId = null;
+      gameState.gameOverReason = null;
     }
 
     io.emit('gameStateUpdate', gameState);
@@ -181,6 +203,19 @@ setInterval(() => {
           break;
       }
 
+      const hitBorder =
+        newHead.x < 0 ||
+        newHead.y < 0 ||
+        newHead.x >= BOARD_SIZE ||
+        newHead.y >= BOARD_SIZE;
+
+      if (hitBorder) {
+        player.isAlive = false;
+        const winnerId = getOtherPlayerId(playerId);
+        endGame(winnerId, 'BORDER_COLLISION');
+        break;
+      }
+
       // 4. Add the new head to the front of the body array
       player.body.unshift(newHead);
 
@@ -192,6 +227,11 @@ setInterval(() => {
       } else {
         player.score += 1;
         gameState.apple = getRandomApplePosition();
+
+        if (player.score >= 10) {
+          endGame(playerId, 'APPLE_TARGET_REACHED');
+          break;
+        }
       }
 
       // TODO: Check for wall collisions

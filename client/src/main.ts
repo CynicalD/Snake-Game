@@ -33,9 +33,12 @@ function drawGame(gameState: GameState) {
   const playerIds = Object.keys(gameState.players);
   const isJoinedPlayer = Boolean(socket.id && gameState.players[socket.id]);
 
-  // NEW: Hide the button if the game has officially started!
   if (gameState.status === 'PLAYING') {
     joinBtn.style.display = 'none';
+  } else if (gameState.status === 'GAME_OVER') {
+    joinBtn.style.display = 'inline-block';
+    joinBtn.innerText = 'Game Over';
+    joinBtn.disabled = true;
   } else {
     joinBtn.style.display = 'inline-block';
 
@@ -55,7 +58,7 @@ function drawGame(gameState: GameState) {
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  if (gameState.status !== 'PLAYING') {
+  if (gameState.status === 'WAITING') {
     ctx.fillStyle = '#7f8c8d';
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
@@ -91,6 +94,37 @@ function drawGame(gameState: GameState) {
         CELL_SIZE - 1
       );
     });
+  }
+
+  if (gameState.status === 'GAME_OVER') {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const didCurrentPlayerWin = Boolean(socket.id && gameState.winnerId === socket.id);
+    const didCurrentPlayerLose = Boolean(socket.id && isJoinedPlayer && gameState.winnerId && gameState.winnerId !== socket.id);
+
+    let title = 'Game Over';
+    if (didCurrentPlayerWin) {
+      title = 'You won!';
+    } else if (didCurrentPlayerLose) {
+      title = 'You lost!';
+    }
+
+    const reasonText =
+      gameState.gameOverReason === 'BORDER_COLLISION'
+        ? 'A player hit the border.'
+        : gameState.gameOverReason === 'APPLE_TARGET_REACHED'
+          ? 'A player reached 10 apples.'
+          : '';
+
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 28px sans-serif';
+    ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 10);
+    ctx.font = '14px sans-serif';
+    if (reasonText) {
+      ctx.fillText(reasonText, canvas.width / 2, canvas.height / 2 + 20);
+    }
   }
 }
 

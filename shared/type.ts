@@ -27,4 +27,6 @@ export interface GameState {
   players: Record<string, Player>; // A dictionary of players, keyed by their socket ID (a hash map to find player by id)
   apple: Point;                    
   status: 'WAITING' | 'PLAYING' | 'GAME_OVER';
+  winnerId: string | null;
+  gameOverReason: 'BORDER_COLLISION' | 'APPLE_TARGET_REACHED' | null;
 }
