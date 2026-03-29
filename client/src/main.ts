@@ -12,7 +12,7 @@ const CELL_SIZE = canvas.width / BOARD_SIZE;
 
 // Connect to server (override with ?server=https://... in URL for remote play)
 const socketUrlParam = new URLSearchParams(window.location.search).get('server');
-const serverUrl = socketUrlParam || 'http://localhost:3000';
+const serverUrl = socketUrlParam || window.location.origin;
 const socket = io(serverUrl, {
   transports: ['websocket']
 });
@@ -28,6 +28,9 @@ socket.on('connect', () => {
 socket.on('gameStateUpdate', (gameState: GameState) => {
   drawGame(gameState);
 });
+
+
+
 // Drawing the Game
 function drawGame(gameState: GameState) {
   const playerIds = Object.keys(gameState.players);
@@ -58,10 +61,29 @@ function drawGame(gameState: GameState) {
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Draw black/yellow checker grid (one tile = one game unit)
+    for (let y = 0; y < BOARD_SIZE; y += 1) {
+    for (let x = 0; x < BOARD_SIZE; x += 1) {
+        const isYellowTile = (x + y) % 2 === 0;
+        ctx.fillStyle = isYellowTile ? '#FFF' : '#000000';
+        ctx.fillRect(
+        x * CELL_SIZE,
+        y * CELL_SIZE,
+        CELL_SIZE,
+        CELL_SIZE
+        );
+    }
+    }
+
   if (gameState.status === 'WAITING') {
-    ctx.fillStyle = '#7f8c8d';
-    ctx.font = '16px sans-serif';
+    ctx.fillStyle = '#1E90FF';
+    ctx.font = 'bold 20px sans-serif';
     ctx.textAlign = 'center';
+    // outline
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 3;
+    ctx.strokeText('Waiting for 2 players to ready up...', canvas.width / 2, canvas.height / 2);
+
     ctx.fillText('Waiting for 2 players to ready up...', canvas.width / 2, canvas.height / 2);
     return;
   }
@@ -74,6 +96,9 @@ function drawGame(gameState: GameState) {
     CELL_SIZE, 
     CELL_SIZE
   );
+
+
+
 
   // Draw the Players
   for (const playerId in gameState.players) {
