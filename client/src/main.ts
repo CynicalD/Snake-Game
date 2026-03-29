@@ -10,7 +10,7 @@ const joinBtn = document.getElementById('join-btn') as HTMLButtonElement;
 // Calculate the pixel size of each grid square
 const CELL_SIZE = canvas.width / BOARD_SIZE;
 
-// 1. Connect to server (override with ?server=https://... in URL for remote play)
+// Connect to server (override with ?server=https://... in URL for remote play)
 const socketUrlParam = new URLSearchParams(window.location.search).get('server');
 const serverUrl = socketUrlParam || 'http://localhost:3000';
 const socket = io(serverUrl, {
@@ -24,11 +24,11 @@ socket.on('connect', () => {
   joinBtn.style.display = 'inline-block';
 });
 
-// 3. The Render Loop: Listen for the server's state and draw it
+// The Render Loop: Listen for the server's state and draw it
 socket.on('gameStateUpdate', (gameState: GameState) => {
   drawGame(gameState);
 });
-// 4. Drawing the Game
+// Drawing the Game
 function drawGame(gameState: GameState) {
   const playerIds = Object.keys(gameState.players);
   const isJoinedPlayer = Boolean(socket.id && gameState.players[socket.id]);
@@ -93,7 +93,7 @@ socket.on('lobbyFull', () => {
   joinBtn.disabled = true;
 });
 
-// 5. User Input: Sending keystrokes to the server
+// User Input: Sending keystrokes to the server
 window.addEventListener('keydown', (e) => {
   switch (e.key) {
     case 'ArrowUp':
@@ -115,7 +115,7 @@ window.addEventListener('keydown', (e) => {
   }
 });
 
-// 6. Ready Up Button
+//  Ready Up Button
 joinBtn.addEventListener('click', () => {
   socket.emit('joinGame');
   joinBtn.innerText = 'Waiting for players...';

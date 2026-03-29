@@ -25,6 +25,6 @@ export interface Player {
 // The master state of the game that the server broadcasts
 export interface GameState {
   players: Record<string, Player>; // A dictionary of players, keyed by their socket ID (a hash map to find player by id)
-  apple: Point;                    // Where the food currently is
+  apple: Point;                    
   status: 'WAITING' | 'PLAYING' | 'GAME_OVER';
 }

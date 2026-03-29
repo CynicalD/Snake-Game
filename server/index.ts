@@ -3,7 +3,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
-// Removed the 'type' keyword so we can import the actual BOARD_SIZE value
+
 import { type GameState, type Player, type Point, BOARD_SIZE } from '../shared/type.js';
 
 const app = express();
@@ -34,7 +34,7 @@ let gameState: GameState = {
   status: 'WAITING'
 };
 
-// 2. Listen for connections
+// 2. listen for connections
 io.on('connection', (socket) => {
   console.log(`🟢 Player connected: ${socket.id}`);
 
@@ -68,7 +68,6 @@ io.on('connection', (socket) => {
     // Count how many players are in the dictionary
     const updatedPlayerCount = Object.keys(gameState.players).length;
     
-    // If we have exactly 2 players, start the game!
     if (updatedPlayerCount === MAX_PLAYERS && gameState.status === 'WAITING') {
       gameState.status = 'PLAYING';
       console.log('🏁 2 Players ready! Game is PLAYING!');
@@ -77,11 +76,11 @@ io.on('connection', (socket) => {
     io.emit('gameStateUpdate', gameState); // Force an immediate update
   });
 
-  //  Listen for keystrokes from the frontend
+  // listen for keystrokes from the frontend
   socket.on('changeDirection', (newDirection) => {
     const player = gameState.players[socket.id];
     
-    // Only change direction if the player exists and isn't dead
+    // onky change direction if the player exists and isn't dead
     if (player && player.isAlive) {
       player.direction = newDirection;
     }
@@ -118,15 +117,15 @@ setInterval(() => {
 
       if (!player || !player.isAlive || player.direction === 'IDLE') continue;
 
-      // 1. Find the current head
+
       const currentHead = player.body[0];
       
       if (!currentHead) continue;
       
-      // 2. Create a copy for the new head
+      // Create a copy for the new head
       const newHead: Point = { x: currentHead.x, y: currentHead.y };
 
-      // 3. Modify the new head's X or Y based on direction
+
       switch (player.direction) {
         case 'UP':
           newHead.y -= 1;
