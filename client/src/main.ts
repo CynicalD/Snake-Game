@@ -55,6 +55,14 @@ function drawGame(gameState: GameState) {
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  if (gameState.status !== 'PLAYING') {
+    ctx.fillStyle = '#7f8c8d';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Waiting for 2 players to ready up...', canvas.width / 2, canvas.height / 2);
+    return;
+  }
+
   // Draw the Apple (Red)
   ctx.fillStyle = '#ff0000';
   ctx.fillRect(
@@ -65,26 +73,24 @@ function drawGame(gameState: GameState) {
   );
 
   // Draw the Players
-  if (gameState.status === 'PLAYING') {
-    for (const playerId in gameState.players) {
-      const player = gameState.players[playerId];
-      
-      // Skip if they are dead
-      if (!player || !player.isAlive) continue;
+  for (const playerId in gameState.players) {
+    const player = gameState.players[playerId];
+    
+    // Skip if they are dead
+    if (!player || !player.isAlive) continue;
 
-      // Highlight our own snake in Neon Green, enemies in Blue
-      ctx.fillStyle = playerId === socket.id ? '#00ff00' : '#0088ff';
+    // Highlight our own snake in Neon Green, enemies in Blue
+    ctx.fillStyle = playerId === socket.id ? '#00ff00' : '#0088ff';
 
-      // Loop through every block in the snake's body and draw it
-      player.body.forEach((segment) => {
-        ctx.fillRect(
-          segment.x * CELL_SIZE, 
-          segment.y * CELL_SIZE, 
-          CELL_SIZE - 1, 
-          CELL_SIZE - 1
-        );
-      });
-    }
+    // Loop through every block in the snake's body and draw it
+    player.body.forEach((segment) => {
+      ctx.fillRect(
+        segment.x * CELL_SIZE, 
+        segment.y * CELL_SIZE, 
+        CELL_SIZE - 1, 
+        CELL_SIZE - 1
+      );
+    });
   }
 }
 

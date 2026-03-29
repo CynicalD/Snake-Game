@@ -27,10 +27,50 @@ function getRandomPosition(): Point {
   };
 }
 
+function isPointOccupiedByAnySnake(point: Point): boolean {
+  for (const playerId in gameState.players) {
+    const player = gameState.players[playerId];
+    if (!player || !player.isAlive) continue;
+
+    const occupiesPoint = player.body.some((segment) => {
+      return segment.x === point.x && segment.y === point.y;
+    });
+
+    if (occupiesPoint) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function getRandomApplePosition(): Point {
+  // Try a bunch of random spots first to avoid spawning on top of snakes.
+  for (let i = 0; i < 100; i += 1) {
+    const candidate = getRandomPosition();
+    if (!isPointOccupiedByAnySnake(candidate)) {
+      return candidate;
+    }
+  }
+
+  // Fallback scan if random attempts fail (very crowded board).
+  for (let y = 0; y < BOARD_SIZE; y += 1) {
+    for (let x = 0; x < BOARD_SIZE; x += 1) {
+      const candidate = { x, y };
+      if (!isPointOccupiedByAnySnake(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  // If the board is completely full, keep current position.
+  return gameState.apple;
+}
+
 // 1. Server side in memory
 let gameState: GameState = {
   players: {}, 
-  apple: { x: 10, y: 10 },
+  apple: getRandomPosition(),
   status: 'WAITING'
 };
 
@@ -144,9 +184,15 @@ setInterval(() => {
       // 4. Add the new head to the front of the body array
       player.body.unshift(newHead);
 
-      // 5. Remove the tail block so the snake stays the same length
-      // (Later, we will skip this step if newHead coordinates match the apple!)
-      player.body.pop();
+      const ateApple = newHead.x === gameState.apple.x && newHead.y === gameState.apple.y;
+
+      // 5. Remove tail unless apple was eaten. Skipping pop grows snake by 1.
+      if (!ateApple) {
+        player.body.pop();
+      } else {
+        player.score += 1;
+        gameState.apple = getRandomApplePosition();
+      }
 
       // TODO: Check for wall collisions
       // TODO: Check for snake collisions
