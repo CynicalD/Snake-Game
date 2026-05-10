@@ -85,6 +85,7 @@ function getOtherPlayerId(playerId: string): string | null {
 
   return null;
 }
+// 3. End the game
 
 function endGame(winnerId: string | null, reason: GameState['gameOverReason']): void {
   gameState.status = 'GAME_OVER';
